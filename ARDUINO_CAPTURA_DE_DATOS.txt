@@ -1,0 +1,38 @@
+Anexo 3. – Codigo de Arduino empleado 
+const int analogInPin = A0;
+#define in1 2
+#define in2 3
+
+//const unsigned long t_high = 1000000;
+//const unsigned long t_period = 2000000;
+const long interval = 2000; 
+
+unsigned long t;
+unsigned long previousMillis;
+unsigned long startMillis;
+unsigned long currentMillis;
+
+int potValue = 0; 
+
+void setup() {
+  Serial.begin(250000);
+  startMillis = micros();
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+}
+
+void loop() {
+  currentMillis = micros();
+  potValue = analogRead(analogInPin);
+  t = currentMillis - startMillis;
+  if (potValue < 200) { digitalWrite(in2, HIGH); digitalWrite(in1 , LOW); }
+  if (potValue > 800) { digitalWrite(in1, HIGH); digitalWrite(in2 , LOW); }
+  if (currentMillis - previousMillis >= interval) {
+    Serial.print(potValue);
+    Serial.print(",");
+    Serial.print(digitalRead(in1));
+    Serial.print(",");
+    Serial.println(digitalRead(in2));
+    previousMillis = currentMillis;
+  }
+}

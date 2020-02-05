@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include "io.h"
+#include <math.h>
+#include <system.h>
+#include <stdlib.h>
+
+/=======  main =========/
+int main (void) {
+	volatile int * ADC = (int *) 0x41020;//asignar la memoria del ADC
+	int * memoria = (int *) 0x20000; // SDRAM address
+	//Variable de lectura
+	unsigned int ldr1;
+	unsigned int ldr2;
+	unsigned int angulo_pot;
+	//Canales mediciones
+	unsigned int canal_ldr1;
+	unsigned int canal_ldr2;
+	unsigned int canal_angulo_pot;
+
+	*(ADC) = 0; //setear valores de los canales en 0
+	while (1){
+		//Asignar valores a los canales
+		canal_ldr1 = 0;
+		canal_ldr2 = 1;
+		canal_angulo_pot = 2;
+
+		//ldr izquierdo
+		ldr1 = (*(ADC+canal_ldr1))*100/4095; //Obtener el valor del ldr
+		printf("El valor del LDR Izq. en el canal %d es --> %d Porciento \n",canal_ldr1,ldr1);
+
+		//ldr derecho
+		ldr2 = (*(ADC+canal_ldr2))*100/4095; //Obtener el valor del ldr
+		printf("El valor del LDR Der. en el canal %d es --> %d Porciento \n",canal_ldr2,ldr2);
+
+		//Potenciometro que permite orientar el sistema
+		angulo_pot = ((*(ADC+canal_angulo_pot))*70/4095)+20;
+		printf("El valor del angulo_pot en el canal %d es --> %d  Porciento\n",canal_angulo_pot,angulo_pot);
+
+		//Escritura en memoria
+		IOWR(memoria,0x20000,ldr1);
+		IOWR(memoria,0x20100,ldr2);
+		IOWR(memoria,0x20200,angulo_pot);
+
+	}
+	return 0;
+}
